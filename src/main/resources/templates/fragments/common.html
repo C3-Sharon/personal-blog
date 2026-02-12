@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- 公共 meta 和 CSS 引用 -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<!-- 导航栏片段 -->
+<!-- 导航栏片段 -->
+<nav th:fragment="header">
+    <div class="nav-container">
+        <a href="/" class="logo">三碳化合物的博客</a>
+        <div class="nav-links">
+            <a href="/">首页</a>
+            <a href="/admin/new" class="write-btn">写博客</a>
+        </div>
+    </div>
+</nav>
+
+<!-- 页脚片段 -->
+<footer th:fragment="footer">
+    <div class="footer-content">
+        <p>© 2026 Sharon</p>
+    </div>
+</footer>
+</body>
+</html>
