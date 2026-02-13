@@ -7,7 +7,21 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
+<!-- 引用导航栏 -->
 <div th:replace="~{fragments/common :: header}"></div>
+
+<!-- 社交按钮区域（只在主页显示） -->
+<div class="social-buttons" th:if="${isHomePage}">
+    <a href="https://github.com/C3-Sharon" target="_blank" class="social-btn github">
+        <span class="social-icon">GitHub</span>
+    </a>
+    <a href="https://space.bilibili.com/344479806" target="_blank" class="social-btn bilibili">
+        <span class="social-icon">Bilibili</span>
+    </a>
+</div>
+
+<!-- 主内容区 -->
+<main class="main-content">
 <h1>三碳化合物的博客</h1>
 
 <!-- 判断是否有博客 -->

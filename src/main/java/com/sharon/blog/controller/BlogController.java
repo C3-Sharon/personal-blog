@@ -29,6 +29,7 @@ public class BlogController {
         // 返回视图名：blog/list.html
         model.addAttribute("showAdminActions", true);
         model.addAttribute("pageTitle", "首页 - 三碳化合物的博客");
+        model.addAttribute("isHomePage", true);
         return "blog/list";
     }
 
@@ -45,9 +46,12 @@ public class BlogController {
             model.addAttribute("pageTitle",
                     blogOptional.get().getTitle()
                             + " - 三碳化合物的博客");
+            model.addAttribute("isHomePage", false);
             return "blog/detail";
         } else {
             // 不存在：返回404页面
+            model.addAttribute("pageTitle", "页面未找到");
+            model.addAttribute("isHomePage", false);
             return "error/404";
         }
 
