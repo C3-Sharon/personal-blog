@@ -22,34 +22,38 @@
 
 <!-- 主内容区 -->
 <main class="main-content">
-<h1>三碳化合物的博客</h1>
+    <h1>三碳化合物的博客</h1>
 
-<!-- 判断是否有博客 -->
-<div th:if="${blogs.isEmpty()}">
-    <div class="no-blogs">
-        <p>还没有博客文章...</p>
+    <!-- 判断是否有博客 -->
+    <div th:if="${blogs.isEmpty()}">
+        <div class="no-blogs">
+            <p>还没有博客文章...</p>
+        </div>
     </div>
-</div>
 
-<!-- 循环展示博客列表 -->
-<div th:each="blog : ${blogs}" class="blog-card">
-    <!-- 标题链接，点击进入详情页 -->
-    <a th:href="@{/blog/{id}(id=${blog.id})}" class="blog-title" th:text="${blog.title}">
-    </a>
-    <!-- 发布时间 -->
-    <div class="blog-meta" th:text="|发布时间:${#temporals.format(blog.createdAt, 'yyyy-MM-dd HH:mm')}|">
-    </div>
-    <!-- 内容摘要（取前100字） -->
-    <div class="blog-summary" th:text="${#strings.abbreviate(blog.content, 100)}">
-    </div>
-    <!-- 在卡片底部添加管理按钮区域 -->
-    <div class="admin-actions" th:if="${showAdminActions}">
-        <a th:href="@{/admin/edit/{id}(id=${blog.id})}" class="edit-btn">编辑</a>
-        <form th:action="@{/admin/delete/{id}(id=${blog.id})}" method="post" style="display: inline;" onsubmit="return confirm('确定删除吗？');">
-            <button type="submit" class="delete-btn">删除</button>
-        </form>
-    </div>
-    <div th:replace="~{fragments/common :: footer}"></div>
-</div>
+    <!-- 循环展示博客列表 -->
+    <div th:each="blog : ${blogs}" class="blog-card">
+        <!-- 标题链接，点击进入详情页 -->
+        <a th:href="@{/blog/{id}(id=${blog.id})}" class="blog-title" th:text="${blog.title}">
+        </a>
+        <!-- 发布时间 -->
+        <div class="blog-meta" th:text="|发布时间:${#temporals.format(blog.createdAt, 'yyyy-MM-dd HH:mm')}|">
+        </div>
+        <!-- 内容摘要（取前100字） -->
+        <div class="blog-summary" th:text="${#strings.abbreviate(blog.content, 100)}">
+        </div>
+        <!-- 在卡片底部添加管理按钮区域 -->
+        <div class="admin-actions" th:if="${showAdminActions}">
+            <a th:href="@{/admin/edit/{id}(id=${blog.id})}" class="edit-btn">编辑</a>
+            <form th:action="@{/admin/delete/{id}(id=${blog.id})}" method="post" style="display: inline;" onsubmit="return confirm('确定删除吗？');">
+                <button type="submit" class="delete-btn">删除</button>
+            </form>
+        </div>
+    </div>  <!-- 博客卡片循环结束 -->
+</main>  <!-- ✅ 这里关闭 main 标签 -->
+
+<!-- ✅ 页脚放在 main 外面 -->
+<div th:replace="~{fragments/common :: footer}"></div>
+
 </body>
 </html>
