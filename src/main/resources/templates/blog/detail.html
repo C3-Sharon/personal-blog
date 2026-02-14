@@ -17,7 +17,7 @@
         <h1 class="detail-title" th:text="${blog.title}">博客标题</h1>
         <div class="detail-meta" th:text="|发表于: ${#temporals.format(blog.createdAt, 'yyyy年MM月dd日 HH:mm')}|">
         </div>
-        <div class="detail-content" th:text="${blog.content}">
+        <div class="detail-content" th:utext="${htmlContent}">
         </div>
         <a href="/" class="btn-secondary" style="margin-left: 0; margin-top: 2rem; display: inline-block;">← 返回首页</a>
     </div>

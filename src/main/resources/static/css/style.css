@@ -320,3 +320,92 @@ footer {
         justify-content: center;
     }
 }
+
+/* Markdown 渲染样式 */
+.detail-content {
+    line-height: 1.8;
+    font-size: 1.1rem;
+    color: #2c3e50;
+}
+
+.detail-content h1,
+.detail-content h2,
+.detail-content h3,
+.detail-content h4,
+.detail-content h5,
+.detail-content h6 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.detail-content h1 {
+    font-size: 2em;
+    border-bottom: 1px solid #eaecef;
+    padding-bottom: 0.3em;
+}
+
+.detail-content h2 {
+    font-size: 1.5em;
+    border-bottom: 1px solid #eaecef;
+    padding-bottom: 0.3em;
+}
+
+.detail-content code {
+    padding: 0.2em 0.4em;
+    margin: 0;
+    font-size: 85%;
+    background-color: rgba(27,31,35,0.05);
+    border-radius: 3px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+
+.detail-content pre {
+    background-color: #f6f8fa;
+    border-radius: 3px;
+    padding: 16px;
+    overflow: auto;
+    line-height: 1.45;
+    margin-bottom: 1rem;
+}
+
+.detail-content pre code {
+    background-color: transparent;
+    padding: 0;
+    white-space: pre;
+}
+
+.detail-content blockquote {
+    padding: 0 1em;
+    color: #6a737d;
+    border-left: 0.25em solid #dfe2e5;
+    margin: 1rem 0;
+}
+
+.detail-content ul,
+.detail-content ol {
+    padding-left: 2em;
+    margin: 1rem 0;
+}
+
+.detail-content img {
+    max-width: 100%;
+    box-sizing: content-box;
+}
+
+.detail-content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+}
+
+.detail-content table th,
+.detail-content table td {
+    padding: 6px 13px;
+    border: 1px solid #dfe2e5;
+}
+
+.detail-content table tr:nth-child(2n) {
+    background-color: #f6f8fa;
+}

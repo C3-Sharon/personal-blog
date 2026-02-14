@@ -3,6 +3,7 @@ package com.sharon.blog.controller;
 import com.sharon.blog.entity.Blog;
 import com.sharon.blog.repository.BlogRepository;
 import com.sharon.blog.service.impl.BlogService;
+import com.sharon.blog.util.MarkdownUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.hibernate.Session;
@@ -21,6 +22,8 @@ import java.util.Optional;
 public class BlogController {
     @Autowired
     private BlogService blogService;
+    @Autowired
+    private MarkdownUtil markdownUtil;
 
     // 1. 博客列表页：展示所有博客
     @GetMapping("/")
@@ -47,8 +50,14 @@ public class BlogController {
 
         // 判断博客是否存在
         if (blogOptional.isPresent()) {
+            Blog blog = blogOptional.get();
             // 存在：把博客对象放进Model，返回详情页
             model.addAttribute("blog", blogOptional.get());
+            // 把 Markdown 内容转换成 HTML
+            String htmlContent = markdownUtil.render(blog.getContent());
+
+            model.addAttribute("blog", blog);
+            model.addAttribute("htmlContent", htmlContent);  // 传给页面的 HTML
             boolean isAdmin = session.getAttribute("adminUser")!=null;
             model.addAttribute("showAdminActions", isAdmin);
             model.addAttribute("pageTitle",
