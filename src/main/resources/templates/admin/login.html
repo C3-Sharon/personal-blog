@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员登录 - 三碳化合物的博客</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<!-- 引用导航栏（登录页也显示导航栏） -->
+<div th:replace="~{fragments/common :: header}"></div>
+
+<!-- 主内容区 -->
+<main class="main-content">
+    <div class="form-container" style="max-width: 400px;">
+        <h1>管理员登录</h1>
+
+        <!-- 显示错误信息（如果有） -->
+        <div th:if="${param.error}" class="error-message" style="color: red; margin-bottom: 1rem;">
+            用户名或密码错误
+        </div>
+
+        <!-- 登录表单 -->
+        <form action="/admin/login" method="post">
+            <div class="form-group">
+                <label for="username">用户名</label>
+                <input type="text" id="username" name="username" required autofocus>
+            </div>
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn-primary">登录</button>
+            <a href="/" class="btn-secondary">返回首页</a>
+        </form>
+    </div>
+</main>
+
+<!-- 引用页脚 -->
+<div th:replace="~{fragments/common :: footer}"></div>
+</body>
+</html>
