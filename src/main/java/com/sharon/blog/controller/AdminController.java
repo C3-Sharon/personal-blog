@@ -1,6 +1,6 @@
 package com.sharon.blog.controller;
 
-import com.sharon.blog.entity.Blog;
+import com.sharon.blog.pojo.Blog;
 import com.sharon.blog.service.impl.BlogService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;

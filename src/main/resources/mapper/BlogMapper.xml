@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sharon.blog.mapper.BlogMapper">
+    <select id="findAllOrderByCreatedAtDesc" resultType="com.sharon.blog.pojo.Blog">
+            select * from blog order by created_at DESC;
+    </select>
+    <select id="findById" resultType="com.sharon.blog.pojo.Blog">
+        select * from blog where id=#{id};
+    </select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into blog(title,content,created_at) values (#{title},#{content},#{createdAt});
+    </insert>
+    <update id="updateBlog">
+        UPDATE blog SET title = #{title}, content = #{content} WHERE id = #{id};
+    </update>
+    <delete id="deleteBlog">
+        delete from blog where id=#{id};
+    </delete>
+
+</mapper>    

@@ -1,15 +1,19 @@
 package com.sharon.blog.service.impl;
 
-import com.sharon.blog.entity.Blog;
+import com.sharon.blog.pojo.Blog;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface BlogService {
+
+
     //查询所有博客
     List<Blog> getAllBlogs();
     //按照id查询博客
-    Optional<Blog> getBlogById(long blogId);
+
+    Optional<Blog> getBlogById(Long id);
+
     //保存博客（新增 更新）
     Blog saveBlog(Blog blog);
     //删除博客
