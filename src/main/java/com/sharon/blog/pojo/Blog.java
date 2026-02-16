@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 
 import lombok.Data;
 @Data
-
 public class Blog {
     private Long id;//犯错：这里改成包装类后，blogmapper xml有几个位置参数得改
 

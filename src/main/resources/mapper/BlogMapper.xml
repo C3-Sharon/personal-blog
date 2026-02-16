@@ -18,5 +18,22 @@
     <delete id="deleteBlog">
         delete from blog where id=#{id};
     </delete>
-
+<select id="selectPage" resultType="com.sharon.blog.pojo.Blog">
+    select * from blog order by created_at desc limit #{offset},#{limit};
+</select>
+    <select id="countAll" resultType="int">
+        select count(*)from blog;
+    </select>
+    <select id="searchBlogs" resultType="com.sharon.blog.pojo.Blog">
+select *from blog
+        where title like concat('%',#{keyword},'%')
+           or content like concat('%',#{keyword},'%')
+        order by created_at desc
+        limit #{offset},#{limit};
+    </select>
+    <select id="countSearch" resultType="int">
+        select count(*) from blog
+        where title like concat('%',#{keyword},'%')
+           or content like concat('%',#{keyword},'%')
+    </select>
 </mapper>    

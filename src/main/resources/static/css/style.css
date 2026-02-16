@@ -409,3 +409,198 @@ footer {
 .detail-content table tr:nth-child(2n) {
     background-color: #f6f8fa;
 }
+    /* ===== 搜索框美化 ===== */
+
+    .search-section {
+        max-width: 1000px;
+        margin: 2rem auto;
+        padding: 0 2rem;
+    }
+
+    .search-box {
+        background: white;
+        border-radius: 50px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        padding: 0.3rem;
+        display: flex;
+        align-items: center;
+        border: 1px solid #eaecef;
+        transition: all 0.3s ease;
+    }
+
+    .search-box:focus-within {
+        box-shadow: 0 4px 20px rgba(0, 102, 204, 0.15);
+        border-color: #0066cc;
+    }
+
+    .search-box input {
+        flex: 1;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+        background: transparent;
+        outline: none;
+        border-radius: 50px;
+    }
+
+    .search-box input::placeholder {
+        color: #aaa;
+        font-style: italic;
+    }
+
+    .search-box button {
+        background: #0cafaf;
+        color: white;
+        border: none;
+        padding: 0.6rem 2rem;
+        border-radius: 50px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 0.2rem;
+        white-space: nowrap;
+    }
+
+    .search-box button:hover {
+        background: #0052a3;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 102, 204, 0.2);
+    }
+
+    .search-info {
+        margin: 1rem 0;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .search-info p {
+        margin: 0;
+        color: #555;
+    }
+
+    .search-info a {
+        color: #0066cc;
+        text-decoration: none;
+        font-size: 0.9rem;
+        padding: 0.3rem 1rem;
+        border: 1px solid #0066cc;
+        border-radius: 20px;
+        transition: all 0.3s;
+    }
+
+    .search-info a:hover {
+        background: #0066cc;
+        color: white;
+    }
+
+    /* ===== 分页导航美化（居中） ===== */
+
+    .pagination-section {
+        max-width: 1000px;
+        margin: 3rem auto;
+        padding: 0 2rem;
+        text-align: center; /* 让整个分页区域居中 */
+    }
+
+    .pagination {
+        display: inline-flex; /* 改为 inline-flex 实现居中 */
+        align-items: center;
+        gap: 0.5rem;
+        background: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        border: 1px solid #eaecef;
+    }
+
+    .pagination a, .pagination span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 2.5rem;
+        height: 2.5rem;
+        padding: 0 0.5rem;
+        border-radius: 50px;
+        text-decoration: none;
+        color: #555;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: transparent;
+        border: 1px solid transparent;
+    }
+
+    .pagination a:hover {
+        background: #f0f7ff;
+        color: #0066cc;
+        border-color: #0066cc;
+    }
+
+    .pagination a.current {
+        background: #0066cc;
+        color: white;
+        font-weight: 500;
+        border-color: #0066cc;
+    }
+
+    .pagination .prev,
+    .pagination .next {
+        padding: 0 1rem;
+        font-weight: 500;
+    }
+
+    .pagination .prev:hover,
+    .pagination .next:hover {
+        background: #0066cc;
+        color: white;
+    }
+
+    .pagination .disabled {
+        opacity: 0.5;
+        pointer-events: none;
+        background: #f5f5f5;
+        color: #999;
+    }
+
+    /* 分页信息显示 */
+
+    .page-info {
+        margin-top: 1rem;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    /* ===== 无结果提示美化 ===== */
+
+    .no-results {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .no-results p {
+        font-size: 1.2rem;
+        color: #666;
+        margin-bottom: 1rem;
+    }
+
+    .no-results a {
+        display: inline-block;
+        padding: 0.6rem 2rem;
+        background: #0066cc;
+        color: white;
+        text-decoration: none;
+        border-radius: 30px;
+        transition: all 0.3s;
+    }
+
+    .no-results a:hover {
+        background: #0052a3;
+        transform: translateY(-2px);
+    }

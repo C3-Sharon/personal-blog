@@ -1,6 +1,5 @@
 package com.sharon.blog.controller;
 
-import com.sharon.blog.pojo.Blog;
 import com.sharon.blog.service.impl.BlogService;
 import com.sharon.blog.util.MarkdownUtil;
 import jakarta.servlet.http.HttpSession;
@@ -9,8 +8,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.RequestParam;
+import com.sharon.blog.pojo.PageResult;
+import com.sharon.blog.pojo.Blog;
 import java.util.Optional;
 
 @Controller
@@ -22,18 +22,35 @@ public class BlogController {
 
     // 1. 博客列表页：展示所有博客
     @GetMapping("/")
-    public String list(Model model, HttpSession session) {
 
-        // 从数据库取出所有博客，按时间倒序（最新的在前面）
-        List<Blog> blogs = blogService.getAllBlogs();
-        // 把博客列表放进Model，传给前端页面
-        model.addAttribute("blogs", blogs);
-        // 返回视图名：blog/list.html
-        boolean isAdmin = session.getAttribute("adminUser")!=null;
-        System.out.println("========== isAdmin: " + isAdmin + " ==========");
-        model.addAttribute("showAdminActions", isAdmin);//只有在管理员模式下才能看见编辑和删除按钮
+    public String list(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(required = false) String keyword,// 新增
+            Model model,
+            HttpSession session) {
+        int pageSize = 3;
+        PageResult<Blog> pageResult;
+
+        // 判断是搜索还是普通分页
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            pageResult = blogService.searchBlogs(keyword, page, pageSize);
+            model.addAttribute("keyword", keyword);
+        } else {
+            pageResult = blogService.getBlogsPage(page, pageSize);
+        }
+        //加日志，看数据
+        System.out.println("===== 分页数据 =====");
+        System.out.println("当前页: " + pageResult.getPage());
+        System.out.println("总记录数: " + pageResult.getTotal());
+        System.out.println("总页数: " + pageResult.getTotalPages());
+        System.out.println("本页数据条数: " + pageResult.getData().size());
+        System.out.println("本页数据: " + pageResult.getData());
+
+        model.addAttribute("pageResult", pageResult);
+        model.addAttribute("showAdminActions", session.getAttribute("adminUser") != null);
         model.addAttribute("pageTitle", "首页 - 三碳化合物的博客");
         model.addAttribute("isHomePage", true);
+
         return "blog/list";
     }
 

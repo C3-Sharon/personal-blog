@@ -19,20 +19,35 @@
         <span class="social-icon">Bilibili</span>
     </a>
 </div>
+<!-- 搜索区域 -->
+<div class="search-section">
+    <div class="search-box">
+        <form th:action="@{/}" method="get" style="display: flex; width: 100%;">
+            <input type="text" name="keyword" placeholder="搜索博客标题..."
+                   th:value="${param.keyword}">
+            <button type="submit">搜索</button>
+        </form>
+    </div>
+</div>
 
-<!-- 主内容区 -->
-<main class="main-content">
+<!-- 搜索结果提示（如果有搜索关键词） -->
+<div class="search-info" th:if="${keyword != null and !keyword.isEmpty()}">
+    <p>关于 “<strong th:text="${keyword}"></strong>” 的搜索结果：</p>
+    <a href="/">返回全部博客</a>
+</div>
+<!--主内容区-->
+    <main class="main-content">
     <h1>三碳化合物的博客</h1>
 
     <!-- 判断是否有博客 -->
-    <div th:if="${blogs.isEmpty()}">
+        <div th:if="${pageResult.data.isEmpty()}">
         <div class="no-blogs">
             <p>还没有博客文章...</p>
         </div>
     </div>
 
     <!-- 循环展示博客列表 -->
-    <div th:each="blog : ${blogs}" class="blog-card">
+        <div th:each="blog : ${pageResult.data}" class="blog-card">
         <!-- 标题链接，点击进入详情页 -->
         <a th:href="@{/blog/{id}(id=${blog.id})}" class="blog-title" th:text="${blog.title}">
         </a>
@@ -51,6 +66,34 @@
         </div>
     </div>  <!-- 博客卡片循环结束 -->
 </main>  <!-- ✅ 这里关闭 main 标签 -->
+
+<div class="pagination-section" th:if="${pageResult.totalPages > 1}">
+    <div class="pagination">
+        <!-- 上一页 -->
+        <a th:if="${pageResult.page > 1}"
+           th:href="@{/(page=${pageResult.page - 1}, keyword=${keyword})}"
+           class="prev">上一页</a>
+        <span th:if="${pageResult.page <= 1}" class="prev disabled">上一页</span>
+
+        <!-- 页码 -->
+        <a th:each="i : ${#numbers.sequence(1, pageResult.totalPages)}"
+           th:href="@{/(page=${i}, keyword=${keyword})}"
+           th:text="${i}"
+           th:class="${i == pageResult.page} ? 'current' : ''"></a>
+
+        <!-- 下一页 -->
+        <a th:if="${pageResult.page < pageResult.totalPages}"
+           th:href="@{/(page=${pageResult.page + 1}, keyword=${keyword})}"
+           class="next">下一页</a>
+        <span th:if="${pageResult.page >= pageResult.totalPages}" class="next disabled">下一页</span>
+    </div>
+
+    <!-- 分页信息 -->
+    <div class="page-info">
+        第 <span th:text="${pageResult.page}"></span> 页 / 共 <span th:text="${pageResult.totalPages}"></span> 页
+        （共 <span th:text="${pageResult.total}"></span> 篇博客）
+    </div>
+</div>
 
 <!-- ✅ 页脚放在 main 外面 -->
 <div th:replace="~{fragments/common :: footer}"></div>
