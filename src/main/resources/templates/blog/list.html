@@ -23,7 +23,7 @@
 <div class="search-section">
     <div class="search-box">
         <form th:action="@{/}" method="get" style="display: flex; width: 100%;">
-            <input type="text" name="keyword" placeholder="搜索博客标题..."
+            <input type="text" name="keyword" placeholder="搜索博客标题或内容..."
                    th:value="${param.keyword}">
             <button type="submit">搜索</button>
         </form>
