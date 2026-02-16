@@ -35,7 +35,7 @@ public class BlogController {
             @RequestParam(required = false) String keyword,// 新增
             Model model,
             HttpSession session) {
-        int pageSize = 3;
+        int pageSize = 5;
         PageResult<Blog> pageResult;
 
         // 判断是搜索还是普通分页
