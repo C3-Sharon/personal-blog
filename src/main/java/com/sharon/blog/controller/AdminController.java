@@ -1,6 +1,7 @@
 package com.sharon.blog.controller;
 
 import com.sharon.blog.service.impl.BlogService;
+import com.sharon.blog.service.impl.CommentService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,8 @@ import java.util.Optional;
 public class AdminController {
     @Autowired
     private BlogService blogService;
+    @Autowired
+    private CommentService commentService;
 
     @GetMapping("/new")
     public String newBlogForm(Model model) {
@@ -92,4 +95,37 @@ public class AdminController {
         session.invalidate();
         return "redirect:/";
     }
+    @PostMapping("/comment/delete/{id}")//@PathVariable 的作用：从 URL 路径中提取参数
+    public String deleteComment(@PathVariable Long id, HttpSession session) {
+        System.out.println("========== 删除评论方法被执行 ==========");
+        System.out.println("评论ID: " + id);
+        System.out.println("session中的adminUser: " + session.getAttribute("adminUser"));
+
+        if (session.getAttribute("adminUser") == null) {
+            System.out.println("未登录，跳转到登录页");
+            return "redirect:/admin/login";
+        }
+
+        System.out.println("开始删除评论，ID: " + id);
+        commentService.deleteComment(id);
+        System.out.println("删除成功，跳转到首页");
+
+        return "redirect:/";
+    }
+
+//    @PostMapping("/admin/comment/delete/{id}")
+//    public String deleteComment(@PathVariable Long id,
+//                                HttpSession session,
+//                                @RequestHeader(value = "Referer", required = false) String referer) {
+//        // 检查是否登录
+//        if (session.getAttribute("adminUser") == null) {
+//            return "redirect:/admin/login";
+//        }
+//
+//        commentService.deleteComment(id);
+//
+//        // 如果存在 referer，则返回原页面；否则返回首页
+//        return "redirect:" + (referer != null ? referer : "/");
+    //AI给的优化版，待研究
+//    }
 }

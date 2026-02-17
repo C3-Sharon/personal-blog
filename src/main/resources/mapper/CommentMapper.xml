@@ -5,7 +5,7 @@
 <mapper namespace="com.sharon.blog.mapper.CommentMapper">
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into comment(blog_id,nickname,content,created_at)
-        values (#{blogId},#{nickname},#{content},#{createAt});
+        values (#{blogId},#{nickname},#{content},#{createdAt});
     </insert>
 <select id="findById" resultType="com.sharon.blog.pojo.Comment">
 select * from comment where blog_id=#{blogId}

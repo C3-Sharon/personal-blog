@@ -12,7 +12,8 @@ public interface CommentMapper {
 
     List<Comment> findById(@Param("blogId") Long id);
 
-    int deleteById(@Param("blogId") Long id);
+    int deleteById(@Param("id") Long id);
 
     int countByBlogId(@Param("blogId") Long blogId);
+
 }

@@ -98,7 +98,7 @@ public class BlogController {
            comment.setNickname(nickname);
            comment.setContent(content);
            commentService.addComment(comment);
-           return "redirect:/blog/" + id;
+           return "redirect:/blog/" + id;//注意正确的表达写法
     }
     }
 

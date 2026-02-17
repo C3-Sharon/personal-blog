@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>赛博展厅 - 三碳化合物的博客</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .gallery-nav {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem 0;
+            justify-content: center;
+        }
+        .gallery-nav a {
+            padding: 0.6rem 2rem;
+            background: #f0f0f0;
+            color: #333;
+            text-decoration: none;
+            border-radius: 30px;
+            transition: all 0.3s;
+        }
+        .gallery-nav a:hover,
+        .gallery-nav a.active {
+            background: #0066cc;
+            color: white;
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .gallery-item {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .gallery-item .info {
+            padding: 1rem;
+        }
+        .gallery-item .title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .gallery-item .desc {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        .gallery-item .meta {
+            color: #999;
+            font-size: 0.8rem;
+        }
+        .admin-actions {
+            padding: 1rem;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 0.5rem;
+        }
+        .file-icon {
+            width: 100%;
+            height: 200px;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #0066cc;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/common :: header}"></div>
+
+<main class="main-content">
+    <h1>展厅</h1>
+
+    <div class="gallery-nav">
+        <a href="/gallery?category=painting" th:class="${category == 'painting'} ? 'active'">绘画作品</a>
+        <a href="/gallery?category=note" th:class="${category == 'note'} ? 'active'">笔记文档</a>
+    </div>
+
+    <!-- 管理员上传按钮 -->
+    <div th:if="${showAdminActions}" style="text-align: right; margin-bottom: 2rem;">
+        <a href="/admin/gallery/upload" class="btn-primary">上传作品</a>
+    </div>
+
+    <!-- 作品网格 -->
+    <div class="gallery-grid" th:if="${not #lists.isEmpty(pageResult.data)}">
+        <div th:each="artwork : ${pageResult.data}" class="gallery-item">
+            <!-- 图片或文件图标 -->
+            <div th:if="${artwork.fileType.startsWith('image/')}">
+                <img th:src="@{${artwork.filePath}}" th:alt="${artwork.title}">
+            </div>
+            <div th:unless="${artwork.fileType.startsWith('image/')}" class="file-icon">
+                📄
+            </div>
+
+            <div class="info">
+                <div class="title" th:text="${artwork.title}">标题</div>
+                <div class="desc" th:text="${artwork.description}">描述</div>
+                <div class="meta" th:text="${#temporals.format(artwork.createdAt, 'yyyy-MM-dd')}">日期</div>
+            </div>
+
+            <!-- 下载按钮 -->
+            <div style="padding: 0 1rem 1rem;">
+                <a th:href="@{${artwork.filePath}}" class="btn-secondary" style="display: block; text-align: center;" download>下载</a>
+            </div>
+
+            <!-- 管理员操作 -->
+            <div class="admin-actions" th:if="${showAdminActions}">
+                <a th:href="@{/admin/gallery/edit/{id}(id=${artwork.id})}" class="edit-btn" style="flex: 1;">编辑</a>
+                <form th:action="@{/admin/gallery/delete/{id}(id=${artwork.id})}" method="post" style="flex: 1;"
+                      onsubmit="return confirm('确定要删除这个作品吗？');">
+                    <button type="submit" class="delete-btn" style="width: 100%;">删除</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 分页 -->
+    <div class="pagination-section" th:if="${pageResult.totalPages > 1}">
+        <div class="pagination">
+            <a th:if="${pageResult.page > 1}" th:href="@{/templates/gallery(page=${pageResult.page - 1}, category=${category})}" class="prev">上一页</a>
+            <span th:if="${pageResult.page <= 1}" class="prev disabled">上一页</span>
+
+            <a th:each="i : ${#numbers.sequence(1, pageResult.totalPages)}"
+               th:href="@{/templates/gallery(page=${i}, category=${category})}"
+               th:text="${i}"
+               th:class="${i == pageResult.page} ? 'current'"></a>
+
+            <a th:if="${pageResult.page < pageResult.totalPages}" th:href="@{/templates/gallery(page=${pageResult.page + 1}, category=${category})}" class="next">下一页</a>
+            <span th:if="${pageResult.page >= pageResult.totalPages}" class="next disabled">下一页</span>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/common :: footer}"></div>
+</body>
+</html>
