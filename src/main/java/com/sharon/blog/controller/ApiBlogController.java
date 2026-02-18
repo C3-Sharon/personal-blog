@@ -1,8 +1,10 @@
 package com.sharon.blog.controller;
 
 import com.sharon.blog.pojo.Blog;
+import com.sharon.blog.pojo.Comment;
 import com.sharon.blog.pojo.PageResult;
 import com.sharon.blog.service.impl.BlogService;
+import com.sharon.blog.service.impl.CommentService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -19,6 +22,8 @@ public class ApiBlogController {
 
     @Autowired
     private BlogService blogService;
+    @Autowired
+    private CommentService commentService;
 
     @GetMapping("/blogs")
     public Map<String, Object> getBlogs(
@@ -125,6 +130,54 @@ public class ApiBlogController {
             result.put("username", session.getAttribute("adminUser"));
         }
 
+        return result;
+    }
+
+    @GetMapping("/blogs/{blogId}/comments")
+    public List<Comment> getComments(@PathVariable Long blogId){
+        return commentService.getCommentsByBlogId(blogId);
+    }
+
+    @PostMapping("/blogs/{blogId}/comments")
+    public Map<String,Object> addComment(@PathVariable Long blogId,
+                                         @RequestBody Comment comment){
+        Map<String,Object> result=new HashMap<>();
+        try {
+            comment.setCreatedAt(LocalDateTime.now());
+            comment.setBlogId(blogId);
+            Comment savedComment=commentService.addComment(comment);
+            result.put("success", true);
+            result.put("message","成功留言");
+            result.put("data",savedComment);
+        }catch (Exception e){
+            result.put("success", false);
+            result.put("message","留言失败"+e.getMessage());
+        }
+        return result;
+    }
+    @DeleteMapping("/admin/comments/{id}")
+    public Map<String,Object> deleteComment(@PathVariable Long id,HttpSession session){
+        Map<String,Object> result=new HashMap<>();
+        System.out.println("========== 删除留言 ==========");
+        System.out.println("接收到的留言ID: " + id);
+        System.out.println("ID类型: " + id.getClass().getName());
+        System.out.println("session中的adminUser: " + session.getAttribute("adminUser"));
+        if(session.getAttribute("adminUser") == null){
+            result.put("success", false);
+            result.put("message","未登录");
+            return result;
+        }
+        try{
+            System.out.println("开始调用 service.deleteComment，ID: " + id);
+            commentService.deleteComment(id);
+            System.out.println("service 调用完成");
+            commentService.deleteComment(id);
+            result.put("success", true);
+            result.put("message","删除成功");
+        }catch (Exception e){
+            result.put("success", false);
+            result.put("message","删除失败"+e.getMessage());
+        }
         return result;
     }
 }

@@ -15,8 +15,8 @@ import java.util.UUID;
 
 @Controller
 public class ImageUploadController {
-
-    @PostMapping("/admin/upload/image")
+//在前后端分离的时候这里的路径加了api，不知原先的混合开发那里这条路还走不走得通
+    @PostMapping("/api/admin/upload/image")
     @ResponseBody
     public Map<String, Object> uploadImage(@RequestParam("file") MultipartFile file) {
         Map<String, Object> result = new HashMap<>();
