@@ -29,17 +29,8 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- 2. 模板引擎（渲染页面） -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
 
-<!--        &lt;!&ndash; 3. JPA（数据库操作零SQL后期改为Mybatis） &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-data-jpa</artifactId>-->
-<!--        </dependency>-->
+
 
         <!-- Mybatis 起步依赖 -->
         <dependency>
@@ -48,14 +39,7 @@
             <version>3.0.3</version>   <!-- 适配 Spring Boot 3.x -->
         </dependency>
 
-<!--        &lt;!&ndash; 4. H2 内存数据库（测试先行使用，后期用MySQL替代） &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>com.h2database</groupId>-->
-<!--            <artifactId>h2</artifactId>-->
-<!--            <scope>runtime</scope>-->
-<!--        </dependency>-->
 
-        <!-- 5. 后续换 MySQL -->
 
         <dependency>
             <groupId>com.mysql</groupId>
@@ -64,7 +48,6 @@
         </dependency>
 
 
-        <!-- 6. 开发工具（热部署，可选但强烈推荐） -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -72,7 +55,7 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- 7. 测试依赖（保留） -->
+        <!--7. 测试依赖（保留） -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -94,12 +77,5 @@
         </dependency>
     </dependencies>
 
-<!--    <build>-->
-<!--        <plugins>-->
-<!--            <plugin>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
-<!--            </plugin>-->
-<!--        </plugins>-->
-<!--    </build>-->
+
 </project>

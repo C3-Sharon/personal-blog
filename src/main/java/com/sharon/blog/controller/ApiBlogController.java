@@ -58,20 +58,31 @@ public class ApiBlogController {
                                     @RequestParam String password,
                                     HttpSession session) {
         Map<String,Object> result = new HashMap<>();//记得学习map相关
-        if("siriisthree".equals(username) && "523123".equals(password)) {
+        String adminUsername = System.getenv("ADMIN_USERNAME");
+        String adminPassword = System.getenv("ADMIN_PASSWORD");
+
+        if (adminUsername.equals(username) && adminPassword.equals(password)) {
             session.setAttribute("adminUser", username);
             result.put("success", true);
-            result.put("message","成功登录");
+            result.put("message", "登录成功");
             result.put("username", username);
-        }else{
+        } else {
             result.put("success", false);
-            result.put("message","用户名或密码有误");
+            result.put("message", "用户名或密码错误");
         }
+
         return result;
     }
+
 @PostMapping("/admin/blogs")
-    public Map<String,Object> createBlog(@RequestBody Blog blog) {
+    public Map<String,Object> createBlog(@RequestBody Blog blog,HttpSession session) {
     Map<String, Object> result = new HashMap<>();
+    // 检查登录
+    if (session.getAttribute("adminUser") == null) {
+        result.put("success", false);
+        result.put("message", "请先登录");
+        return result;
+    }
     try {
         blog.setCreatedAt(LocalDateTime.now());
         Blog savedBlog = blogService.saveBlog(blog);
@@ -85,8 +96,15 @@ public class ApiBlogController {
     return result;
 }
       @PostMapping ("/admin/blogs/{id}")
-  public Map<String,Object> updateBlog(@PathVariable Long id,@RequestBody Blog blog){
+  public Map<String,Object> updateBlog(@PathVariable Long id,
+                                       @RequestBody Blog blog,
+                                       HttpSession session) {
         Map<String,Object> result=new HashMap<>();
+          if (session.getAttribute("adminUser") == null) {
+              result.put("success", false);
+              result.put("message", "请先登录");
+              return result;
+          }
         try {
               blog.setId(id);
               Blog updateBlog =blogService.saveBlog(blog);
@@ -108,8 +126,14 @@ public class ApiBlogController {
         return result;
     }
     @PostMapping("/admin/delete/{id}")
-    public Map<String,Object> deleteBlog(@PathVariable Long id){
+    public Map<String,Object> deleteBlog(@PathVariable Long id,
+                                         HttpSession session){
         Map<String,Object> result=new HashMap<>();
+        if (session.getAttribute("adminUser") == null) {
+            result.put("success", false);
+            result.put("message", "请先登录");
+            return result;
+        }
         try {
             blogService.deleteBlog(id);
             result.put("success", true);
@@ -123,11 +147,12 @@ public class ApiBlogController {
     @GetMapping("/admin/check")
     public Map<String, Object> checkLogin(HttpSession session) {
         Map<String, Object> result = new HashMap<>();
-        boolean isLoggedIn = session.getAttribute("adminUser") != null;
+        Object adminUser = session.getAttribute("adminUser");
+        boolean isLoggedIn = adminUser != null;
 
         result.put("isLoggedIn", isLoggedIn);
         if (isLoggedIn) {
-            result.put("username", session.getAttribute("adminUser"));
+            result.put("username", adminUser);
         }
 
         return result;
@@ -156,12 +181,11 @@ public class ApiBlogController {
         return result;
     }
     @DeleteMapping("/admin/comments/{id}")
-    public Map<String,Object> deleteComment(@PathVariable Long id,HttpSession session){
+    public Map<String,Object> deleteComment(@PathVariable Long id,
+                                            HttpSession session){
         Map<String,Object> result=new HashMap<>();
-        System.out.println("========== 删除留言 ==========");
-        System.out.println("接收到的留言ID: " + id);
-        System.out.println("ID类型: " + id.getClass().getName());
-        System.out.println("session中的adminUser: " + session.getAttribute("adminUser"));
+
+
         if(session.getAttribute("adminUser") == null){
             result.put("success", false);
             result.put("message","未登录");
