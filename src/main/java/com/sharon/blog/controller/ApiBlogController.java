@@ -77,7 +77,7 @@ public class ApiBlogController {
 @PostMapping("/admin/blogs")
     public Map<String,Object> createBlog(@RequestBody Blog blog,HttpSession session) {
     Map<String, Object> result = new HashMap<>();
-    // 检查登录
+
     if (session.getAttribute("adminUser") == null) {
         result.put("success", false);
         result.put("message", "请先登录");

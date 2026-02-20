@@ -37,7 +37,7 @@ public class ApiGalleryController {
     public ArtWork getArtWork(@PathVariable Long id){
         return artWorkService.getById(id);
     }
-    // 上传作品
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Map<String, Object> uploadArtwork(
             @RequestParam String title,
@@ -48,7 +48,7 @@ public class ApiGalleryController {
 
         Map<String, Object> result = new HashMap<>();
 
-        // 检查登录
+
         if (session.getAttribute("adminUser") == null) {
             result.put("success", false);
             result.put("message", "未登录");
@@ -56,7 +56,7 @@ public class ApiGalleryController {
         }
 
         try {
-            // 保存文件
+
             String originalFilename = file.getOriginalFilename();
             String extension = "";
             if (originalFilename != null && originalFilename.contains(".")) {
@@ -74,7 +74,7 @@ public class ApiGalleryController {
             File dest = new File(uploadPath + File.separator + filename);
             file.transferTo(dest);
 
-            // 保存作品信息
+
             ArtWork artwork = new ArtWork();
             artwork.setTitle(title);
             artwork.setCategory(category);

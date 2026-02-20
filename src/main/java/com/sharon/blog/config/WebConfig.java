@@ -12,11 +12,10 @@ public class WebConfig implements WebMvcConfigurer {
     }
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // 获取项目根路径
+
         String projectPath = System.getProperty("user.dir");
         String uploadPath = "file:" + projectPath + "/uploads/";
 
-        // 映射 /uploads/** 到本地的 uploads 目录
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations(uploadPath);
 

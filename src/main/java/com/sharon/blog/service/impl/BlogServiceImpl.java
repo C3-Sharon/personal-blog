@@ -22,9 +22,9 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public PageResult<Blog> searchBlogs(String keyword, int page, int size) {
         int offset = (page - 1) * size;
-        // Mapper 返回 List<Blog>
+
         List<Blog> blogs = blogMapper.searchBlogs(keyword, offset, size);
-        int total = blogMapper.countSearch(keyword);  // 需要先实现 count 方法？？为什么
+        int total = blogMapper.countSearch(keyword);
 
         int totalPages = (total + size - 1) / size;
 
@@ -39,9 +39,9 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public Optional<Blog> getBlogById(Long id) {
-        // Mapper 返回 Blog 或 null
+
         Blog blog = blogMapper.findById(id);
-        // 手动包装成 Optional
+
         return Optional.ofNullable(blog);
     }
 
@@ -50,12 +50,12 @@ public class BlogServiceImpl implements BlogService {
         if (blog.getCreatedAt() == null) {
             blog.setCreatedAt(LocalDateTime.now());
         }
-//因为这个判断将id类型从long改成了Long
+
         if (blog.getId() == null) {
-            // 新增
+
             blogMapper.insert(blog);
         } else {
-            // 更新
+
             blogMapper.updateBlog(blog);
         }
         return blog;
@@ -66,7 +66,6 @@ public class BlogServiceImpl implements BlogService {
         blogMapper.deleteBlog(blogId);
 
     }
-//20260215犯错：调用了类名而不是对象
 
     @Override
     public PageResult<Blog> getBlogsPage(int page, int size) {

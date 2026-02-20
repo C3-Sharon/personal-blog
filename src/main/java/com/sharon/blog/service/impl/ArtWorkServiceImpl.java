@@ -52,7 +52,7 @@ artWorkMapper.deleteById(id);
            artWorkMapper.insert(artWork);
     }else{
            artWork.setUpdatedAt(LocalDateTime.now());
-           artWorkMapper.update(artWork);//这里一开始忘记写了导致一直编辑不了
+           artWorkMapper.update(artWork);
        }
        return artWork;
     }
