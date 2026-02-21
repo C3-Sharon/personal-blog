@@ -164,7 +164,7 @@ apt install git -y
 ### 部署后端
 ```bash
 # 克隆代码
-git clone https://github.com/你的用户名/personal-blog.git
+git clone https://github.com/C3-Sharon/personal-blog.git
 cd personal-blog
 
 # 修改配置文件
