@@ -1,6 +1,6 @@
 # 个人博客后端 API
 
-基于 Spring Boot 3 + MyBatis 的个人博客系统后端，提供 RESTful API 接口。
+基于 Spring Boot 3 + MyBatis 的个人博客系统后端，提供 RESTful API 接口,前端：https://github.com/C3-Sharon/blog-frontend
 
 ## 目录
 
@@ -63,7 +63,7 @@
 
 ### 克隆项目
 ```bash
-git clone https://github.com/你的用户名/personal-blog.git
+git clone https://github.com/C3-Sharon/personal-blog.git
 cd personal-blog
 ```
 
@@ -164,7 +164,7 @@ apt install git -y
 ### 部署后端
 ```bash
 # 克隆代码
-git clone https://github.com/你的用户名/personal-blog.git
+git clone https://github.com/C3-Sharon/personal-blog.git
 cd personal-blog
 
 # 修改配置文件
@@ -179,9 +179,9 @@ nohup java -jar target/personal-blog-0.0.1-SNAPSHOT.jar > blog.log 2>&1 &
 ```
 
 ### 部署前端
-```bash
+```bashon
 # 克隆代码
-git clone https://github.com/你的用户名/blog-frontend.git
+git clone https://github.com/C3-Sharon/blog-frontend.git
 cd blog-frontend
 
 # 修改 API 地址
@@ -301,8 +301,8 @@ src/main/java/com/sharon/blog/
 ```
 ### 项目选择：
 ```text
-   之所以选择博客框架是因为我是有写每日日程或记录习惯的人，创建一个博客框架十分实用，在某种意义上可以督促我按时完成每天的记录且能督促我及时
-总结（无论是学习心得还是生活体验感想）；其次是我确实蛮希望拥有一个属于自己的网站来着。
+   之所以选择博客框架是因为我是有写每日日程或记录习惯的人，创建一个博客框架十分实用，在某种意义上可以督促我
+按时完成每天的记录且能督促我及时总结（无论是学习心得还是生活体验感想）；其次是我确实蛮希望拥有一个属于自己的网站来着。
 ```
 ### 功能设计
 ```text
