@@ -32,7 +32,7 @@
 
 ### 博客管理
 - 博客列表（支持分页、搜索）
-- 博客详情
+- 博客详情（支持评论）
 - 发布博客（支持 Markdown）（管理员）
 - 编辑博客（管理员）
 - 删除博客（管理员）
@@ -275,12 +275,18 @@ http://你的服务器IP
 ```
 text
 src/main/java/com/sharon/blog/
-├── controller/          # API 控制器
-├── service/             # 业务逻辑层
-├── mapper/              # MyBatis 接口
-├── entity/              # 实体类
-├── config/              # 配置类
-└── util/                # 工具类
+├── config/              
+├── controller/         
+├── handler/              
+├── mapper/            
+├── pojo/                
+├── service/           
+└── util/             
+
+src/main/resources/
+├── db/migration/       
+├── mapper/             
+└── application.properties
 ```
 
 ## 完成日志
@@ -295,7 +301,7 @@ src/main/java/com/sharon/blog/
 ### 项目选择：
 ```text
    之所以选择博客框架是因为我是有写每日日程或记录习惯的人，创建一个博客框架十分实用，在某种意义上可以督促我
-按时完成每天的记录且能督促我及时总结（无论是学习心得还是生活体验感想）；其次是我确实蛮希望拥有一个属于自己的网站来着。
+按时完成每天的记录且能督促我及时总结（无论是学习心得还是生活体验感想）；
 ```
 ### 功能设计
 ```text
