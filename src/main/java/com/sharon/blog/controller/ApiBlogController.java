@@ -138,7 +138,6 @@ public class ApiBlogController {
             System.out.println("开始调用 service.deleteComment，ID: " + id);
             commentService.deleteComment(id);
             System.out.println("service 调用完成");
-            commentService.deleteComment(id);
             return Result.ok();
 
     }
