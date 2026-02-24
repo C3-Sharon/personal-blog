@@ -1,5 +1,6 @@
 package com.sharon.blog.controller;
 
+import com.sharon.blog.util.Result;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -8,8 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 @Controller
@@ -17,25 +16,16 @@ public class ImageUploadController {
 
     @PostMapping("/api/admin/upload/image")
     @ResponseBody
-    public Map<String, Object> uploadImage(@RequestParam("file") MultipartFile file) {
-        Map<String, Object> result = new HashMap<>();
-
-        try {
+    public Result<String> uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
 
             if (file.isEmpty()) {
-                result.put("success", false);
-                result.put("message", "文件不能为空");
-                return result;
+                return Result.error("文件不能为空");
             }
-
 
             String contentType = file.getContentType();
             if (contentType == null || !contentType.startsWith("image/")) {
-                result.put("success", false);
-                result.put("message", "只允许上传图片文件");
-                return result;
+               return Result.error("只准上传图片文件");
             }
-
 
             String originalFilename = file.getOriginalFilename();
             String extension = "";
@@ -44,15 +34,12 @@ public class ImageUploadController {
             }
             String filename = UUID.randomUUID().toString() + extension;
 
-
             String projectPath = System.getProperty("user.dir");
             String uploadPath = projectPath + File.separator + "uploads";
-
 
             System.out.println("========== 图片上传调试信息 ==========");
             System.out.println("项目路径: " + projectPath);
             System.out.println("上传目录: " + uploadPath);
-
 
             File uploadFolder = new File(uploadPath);
             if (!uploadFolder.exists()) {
@@ -60,28 +47,17 @@ public class ImageUploadController {
                 System.out.println("创建上传目录: " + (created ? "成功" : "失败"));
             }
 
-
             File dest = new File(uploadPath + File.separator + filename);
             file.transferTo(dest);
 
             System.out.println("文件保存路径: " + dest.getAbsolutePath());
             System.out.println("文件是否存在: " + dest.exists());
 
-
             String fileUrl = "/uploads/" + filename;
             System.out.println("图片访问URL: " + fileUrl);
             System.out.println("=====================================");
 
-            result.put("success", true);
-            result.put("url", fileUrl);
-            result.put("message", "上传成功");
+            return Result.ok("图片上传成功",fileUrl);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            result.put("success", false);
-            result.put("message", "上传失败：" + e.getMessage());
-        }
-
-        return result;
     }
 }

@@ -34,6 +34,6 @@ select *from blog
     <select id="countSearch" resultType="int">
         select count(*) from blog
         where title like concat('%',#{keyword},'%')
-           or content like concat('%',#{keyword},'%')
+           or content like concat('%',#{keyword},'%');
     </select>
 </mapper>    
