@@ -50,15 +50,15 @@ public class ApiBlogController {
     }
 
     @GetMapping("/blogs/{id}")
-    public Blog getBlogById(@PathVariable Long id) {
-        return blogService.getBlogById(id).orElse(null);
+    public Result<Blog> getBlogById(@PathVariable Long id) {
+        return Result.ok(blogService.getBlogById(id).orElse(null));
     }
 
     @PostMapping("/admin/login")
     public Result<LoginStatus> login(@RequestParam String username, @RequestParam String password, HttpSession session) {
         String adminUsername = System.getenv("ADMIN_USERNAME");
         String adminPassword = System.getenv("ADMIN_PASSWORD");
-
+        System.out.println("期待账号: " + adminUsername + "，收到账号: " + username);
         if (adminUsername.equals(username) && adminPassword.equals(password)) {
             session.setAttribute("adminUser", username);
             return Result.ok(new LoginStatus(true,username));
@@ -107,6 +107,7 @@ public class ApiBlogController {
     @GetMapping("/admin/check")
     public Result<LoginStatus> checkLogin(HttpSession session) {
         Object adminUser = session.getAttribute("adminUser");
+        System.out.println("检查登录态，Session中的用户: " + adminUser);
         boolean isLoggedIn = adminUser != null;
         if(isLoggedIn){
             return Result.ok(new LoginStatus(true,adminUser.toString()));
@@ -116,8 +117,8 @@ public class ApiBlogController {
     }
 
     @GetMapping("/blogs/{blogId}/comments")
-    public List<Comment> getComments(@PathVariable Long blogId){
-        return commentService.getCommentsByBlogId(blogId);
+    public Result<List<Comment>> getComments(@PathVariable Long blogId){
+        return Result.ok(commentService.getCommentsByBlogId(blogId));
     }
 
     @PostMapping("/blogs/{blogId}/comments")
