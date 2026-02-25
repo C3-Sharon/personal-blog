@@ -23,6 +23,8 @@
 - **MyBatis** - 持久层框架
 - **MySQL 8.0** - 数据库
 - **Maven** - 项目构建
+- **Flyway** - 数据库版本管理（自动化建表）
+- **Spring AOP** - 切面编程
 - **Lombok** - 简化代码
 - **CommonMark** - Markdown 渲染
 
@@ -30,7 +32,7 @@
 
 ### 博客管理
 - 博客列表（支持分页、搜索）
-- 博客详情
+- 博客详情（支持评论）
 - 发布博客（支持 Markdown）（管理员）
 - 编辑博客（管理员）
 - 删除博客（管理员）
@@ -77,24 +79,22 @@ CREATE DATABASE blog CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 # 自定义数据库连接（使用环境变量或直接修改）以及限制文件上传大小
 spring.datasource.username=${DB_USERNAME:root}
 spring.datasource.password=${DB_PASSWORD:}
-spring.servlet.multipart.max-file-size=100MB
-spring.servlet.multipart.max-request-size=100MB
-# 确认文件上传路径（默认在项目根目录的 uploads 文件夹）
-spring.web.resources.static-locations=classpath:/static/,file:uploads/
+spring.servlet.multipart.max-file-size=15MB
+spring.servlet.multipart.max-request-size=15MB
 ```
 
 ### 环境变量设置
 #### Windows（临时）
 ```bash
 set DB_USERNAME=root
-set DB_PASSWORD=123456
+set DB_PASSWORD=你的数据库密码
 set ADMIN_USERNAME=admin
-set ADMIN_PASSWORD=123456
+set ADMIN_PASSWORD=你的后台登录密码
 ```
 
 #### Windows（永久）
 - 打开“系统属性” → “高级” → “环境变量”
-- 添加系统变量：（按照个人需要自定义即可）
+- 在“用户变量”中新建以下条目：
     - 变量名：`DB_USERNAME`，变量值：`root`
     - 变量名：`DB_PASSWORD`，变量值：`123456`
     - 变量名：`ADMIN_USERNAME`，变量值：`admin`
@@ -103,17 +103,14 @@ set ADMIN_PASSWORD=123456
 #### Mac/Linux
 ```bash
 export DB_USERNAME=root
-export DB_PASSWORD=123456
+export DB_PASSWORD=你的数据库密码
 export ADMIN_USERNAME=admin
-export ADMIN_PASSWORD=123456
+export ADMIN_PASSWORD=你的后台登录密码
 ```
 
 ### 运行项目
 ```bash
-# 使用 Maven Wrapper
-./mvnw spring-boot:run
-
-# 或使用本地 Maven
+# 使用 Maven
 mvn spring-boot:run
 ````
 ### 测试接口
@@ -121,7 +118,7 @@ mvn spring-boot:run
 ```
 http://localhost:8080/api/blogs
 ```
-如果返回 JSON 数据，说明启动成功
+若返回带有 code: 200 的 JSON 数据且数据库中自动出现了 flyway_schema_history 表，说明项目已启动
 
 ### 打包部署
 ```bash
@@ -167,14 +164,14 @@ apt install git -y
 git clone https://github.com/C3-Sharon/personal-blog.git
 cd personal-blog
 
-# 修改配置文件
-vim src/main/resources/application.properties
-# 将数据库地址改为 localhost，密码改为服务器数据库密码
+# 设置生产环境必要的环境变量（根据实际情况修改）
+export DB_USERNAME=root
+export DB_PASSWORD=你的服务器数据库密码
+export ADMIN_USERNAME=admin
+export ADMIN_PASSWORD=你的后台登录密码
 
-# 打包
+# 打包并运行
 mvn clean package -Dmaven.test.skip=true
-
-# 运行（使用 nohup 后台运行）
 nohup java -jar target/personal-blog-0.0.1-SNAPSHOT.jar > blog.log 2>&1 &
 ```
 
@@ -184,15 +181,12 @@ nohup java -jar target/personal-blog-0.0.1-SNAPSHOT.jar > blog.log 2>&1 &
 git clone https://github.com/C3-Sharon/blog-frontend.git
 cd blog-frontend
 
-# 修改 API 地址
-vim .env
-# 写入：VITE_API_BASE_URL=http://你的服务器IP:8080
+# 修改 API 地址（写入你的服务器公网 IP 或域名）
+echo "VITE_API_BASE_URL=http://你的服务器IP/api" > .env.production
 
-# 打包
+# 打包并部署到 Nginx 目录
 npm install
 npm run build
-
-# 将 dist 目录复制到 nginx 目录
 cp -r dist/* /var/www/html/
 ```
 
@@ -281,12 +275,18 @@ http://你的服务器IP
 ```
 text
 src/main/java/com/sharon/blog/
-├── controller/          # API 控制器
-├── service/             # 业务逻辑层
-├── mapper/              # MyBatis 接口
-├── entity/              # 实体类
-├── config/              # 配置类
-└── util/                # 工具类
+├── config/              
+├── controller/         
+├── handler/              
+├── mapper/            
+├── pojo/                
+├── service/           
+└── util/             
+
+src/main/resources/
+├── db/migration/       
+├── mapper/             
+└── application.properties
 ```
 
 ## 完成日志
@@ -296,18 +296,17 @@ src/main/java/com/sharon/blog/
 速度提升的同时带来的有知识掌握不牢，思维混乱的问题（当时我对该怎么有条理地构建一个项目一头雾水），我个人选择的处理方式是早点启动项目的构建
 （2.12开始，此时刚开始spring MVC的学习）， 通过项目驱动学习的方式加深我对知识点的印象，因此前面部分我基本是照着ai的建议一步一步跟着敲的，
 在每日完成的记录中可以看到采用了混合开发（后期自行改为前后端分离），使用JPA（中期自行改为mybatis），并在项目完成之后花了很多时间梳理项目
-构建相关的要点。我觉得这可能是较为适合我的学习方式，通过此项目我巩固了前面我所学到的东西也学到了不少新的附加的知识（比如说markdown语法），
-也积累了经验。
+构建相关的要点。我觉得这可能是较为适合我的学习方式，通过此项目我巩固了前面我所学到的东西也学到了不少新的附加的知识同时也积累了经验。
 ```
 ### 项目选择：
 ```text
    之所以选择博客框架是因为我是有写每日日程或记录习惯的人，创建一个博客框架十分实用，在某种意义上可以督促我
-按时完成每天的记录且能督促我及时总结（无论是学习心得还是生活体验感想）；其次是我确实蛮希望拥有一个属于自己的网站来着。
+按时完成每天的记录且能督促我及时总结（无论是学习心得还是生活体验感想）；
 ```
 ### 功能设计
 ```text
-   比起一个考核作业我更希望这个项目能成为我长期使用的工具，并随着我能力的提升不断更新，所以在设计某些功能的时候（上传照片并展示，展厅，支持markdown）
-并没有考虑到超纲的问题，直接按着ai给的指示敲了，项目完成之后也尽力理解了。以下是我对一些功能的说明：
+   比起一个考核作业我更希望这个项目能成为我长期使用的工具，并随着我能力的提升不断更新，所以在设计某些功能的时候（上传照片并展示，展厅，支持markdown，包括我在部署到服务器的时候出现了仍需手动建表后期进行了优化）
+并没有考虑到超纲的问题，直接按着ai给的指示敲了，项目完成之后也尽力理解了相关代码的作用机制。以下是我对一些功能的说明：
  留言板：参考以前使用过的pome，朋友们之间可以实现对帖主发布内容进行反馈与评论，我比较喜欢这样的社交形式，于是应用到我的博客框架中；
  展厅：我是喜欢画画的人，于是想在我自己的博客中集中地展示我的作品，同时也有想分享一些文档，于是设计了展厅并进行了分区；
  社交软件按钮：既然是展示个人信息的博客，我也希望在其中可以跳转到我的一些账号上，所以设计了这个按钮；
@@ -400,7 +399,15 @@ src/main/java/com/sharon/blog/
 前后端代码分别推送到GitHub
 将代码部署到云服务器，购买域名
 ```
-
+#### 2.23（引入AOP思维优化后端）
+```text
+引入AOP思想，对后端通用逻辑进行横向抽取；
+```
+#### 2.24（全栈适配）
+```text
+引入 Flyway 迁移框架；
+引入 ${user.dir} 动态路径;；
+```
 ## 作者
 三碳化合物 (C3-Sharon)
 
