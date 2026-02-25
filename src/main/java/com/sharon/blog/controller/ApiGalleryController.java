@@ -3,6 +3,7 @@ package com.sharon.blog.controller;
 import com.sharon.blog.pojo.ArtWork;
 import com.sharon.blog.pojo.PageResult;
 import com.sharon.blog.service.impl.ArtWorkService;
+import com.sharon.blog.util.Result;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -22,41 +23,30 @@ public class ApiGalleryController {
     @Autowired
     private ArtWorkService artWorkService;
     @GetMapping
-    public Map<String,Object> getArtWorks(@RequestParam(defaultValue = "paintings") String category,
+    public Result<PageResult<ArtWork>> getArtWorks(@RequestParam(defaultValue = "painting") String category,
                                           @RequestParam(defaultValue = "1") int page,
                                           @RequestParam(defaultValue = "12") int size){
         PageResult<ArtWork> pageResult=artWorkService.getPageByCategory(category,page,size);
-        Map<String,Object> result=new HashMap<>();
-        result.put("page",pageResult.getPage());
-        result.put("size",pageResult.getSize());
-        result.put("total",pageResult.getTotal());
-        result.put("data",pageResult.getData());
-        return result;
+        System.out.println("查询分类: " + category);
+        System.out.println("数据库返回记录数: " + (pageResult.getData() != null ? pageResult.getData().size() : "null"));
+        return Result.ok(pageResult);
     }
     @GetMapping("/{id}")
-    public ArtWork getArtWork(@PathVariable Long id){
-        return artWorkService.getById(id);
+    public Result<ArtWork> getArtWork(@PathVariable Long id){
+        return Result.ok(artWorkService.getById(id));
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Map<String, Object> uploadArtwork(
+    public Result<ArtWork> uploadArtwork(
             @RequestParam String title,
             @RequestParam String category,
             @RequestParam String description,
             @RequestParam("file") MultipartFile file,
-            HttpSession session) {
-
-        Map<String, Object> result = new HashMap<>();
-
+            HttpSession session) throws IOException {
 
         if (session.getAttribute("adminUser") == null) {
-            result.put("success", false);
-            result.put("message", "未登录");
-            return result;
+            return Result.error("请先登录");
         }
-
-        try {
-
             String originalFilename = file.getOriginalFilename();
             String extension = "";
             if (originalFilename != null && originalFilename.contains(".")) {
@@ -74,7 +64,6 @@ public class ApiGalleryController {
             File dest = new File(uploadPath + File.separator + filename);
             file.transferTo(dest);
 
-
             ArtWork artwork = new ArtWork();
             artwork.setTitle(title);
             artwork.setCategory(category);
@@ -86,56 +75,28 @@ public class ApiGalleryController {
 
             artWorkService.saveArtwork(artwork);
 
-            result.put("success", true);
-            result.put("message", "上传成功");
-            result.put("data", artwork);
+            return Result.ok(artwork);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            result.put("success", false);
-            result.put("message", "上传失败：" + e.getMessage());
         }
 
-        return result;
-    }
     @PutMapping("/{id}")
-    public Map<String,Object> updateArtwork(@PathVariable Long id,
-                                            @RequestBody ArtWork artwork,
-                                            HttpSession session){
-        Map<String,Object> result = new HashMap<>();
+    public Result<ArtWork> updateArtwork(@PathVariable Long id,
+                                @RequestBody ArtWork artwork,
+                                HttpSession session){
         if (session.getAttribute("adminUser") == null) {
-            result.put("success", false);
-            result.put("message","未登录");
-            return result;
-        }try{
+            return Result.error("请先登录");
+        }
             artwork.setId(id);
             artwork.setUpdatedAt(LocalDateTime.now());
             artWorkService.saveArtwork(artwork);
-            result.put("success", true);
-            result.put("message","成功更新");
-            result.put("data", artwork);
-        }catch (Exception e){
-            result.put("success", false);
-            result.put("message","更新失败" + e.getMessage());
-        }
-        return result;
+            return Result.ok(artwork);
     }
     @DeleteMapping("/{id}")
-    public Map<String,Object> deleteArtwork(@PathVariable Long id,HttpSession session){
-        Map<String,Object> result = new HashMap<>();
+    public Result<Void> deleteArtwork(@PathVariable Long id,HttpSession session){
         if (session.getAttribute("adminUser") == null) {
-            result.put("success", false);
-            result.put("message","未登录");
-            return result;
-        }try{
-            artWorkService.deleteArtwork(id);
-            result.put("success", true);
-            result.put("message","成功删除");
-            result.put("data", id);
-        }catch (Exception e){
-            result.put("success", false);
-            result.put("message","删除失败"+e.getMessage());
+            return Result.error("请先登录");
         }
-        return result;
+            artWorkService.deleteArtwork(id);
+            return Result.ok();
     }
 }
