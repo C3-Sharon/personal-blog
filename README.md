@@ -144,38 +144,29 @@ java -jar target/personal-blog-0.0.1-SNAPSHOT.jar \
 # 更新系统
 apt update && apt upgrade -y
 
-# 安装 JDK 17
-apt install openjdk-17-jdk -y
-
-# 安装 MySQL
-apt install mysql-server -y
-
-# 安装 Nginx（用于前端）
-apt install nginx -y
-
-# 安装 Git
-apt install git -y
+# 安装必要组件
+apt install openjdk-17-jdk mysql-server nginx git unzip -y
 ```
 
 ### 部署后端
 ```bash
 # 准备目录
 mkdir -p /var/www/blog
-cd /var/www/blog
-# 将打包好的 jar 包上传到此处
+cd /root/personal-blog
 
-# 启动后端
-# 使用 nohup 后台运行，并指定服务器的公网地址作为跨域白名单
+# 启动后端 (注意设置文件上传大小限制)
 nohup java -jar personal-blog-0.0.1-SNAPSHOT.jar \
   --DB_PASSWORD=你的数据库密码 \
-  --CORS_ORIGIN=http://你的服务器IP或域名 \
+  --CORS_ORIGIN=http://你的服务器IP \
   --ADMIN_USERNAME=你的后台用户名 \
   --ADMIN_PASSWORD=你的后台登录密码 \
+  --spring.servlet.multipart.max-file-size=50MB \
+  --spring.servlet.multipart.max-request-size=50MB \
   > blog.log 2>&1 &
 ```
 
 ### 部署前端
-```bashon
+```bash
 # 修改 API 地址（写入你的服务器公网 IP 或域名）
 echo "VITE_API_BASE_URL=http://你的服务器IP/api" > .env.production
 
@@ -192,25 +183,31 @@ vim /etc/nginx/sites-available/default
 
 写入：
 ```nginx
+# 为了让 Nginx 有权限读取 /root 下的图片，建议将第一行修改为：
+# user root; 
+
 server {
     listen 80;
-    server_name 你的域名或IP;
+    server_name 你的服务器IP;
     
-    root /var/www/html;
-    index index.html;
-    
+    # 允许上传大图
+    client_max_body_size 50M;
+
     location / {
+        root /var/www/html;
+        index index.html;
         try_files $uri $uri/ /index.html;
     }
-    
+
+    # 接口转发：注意末尾的斜杠
     location /api/ {
-        proxy_pass http://localhost:8080;
+        proxy_pass http://127.0.0.1:8080/api/;
         proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
     }
-    
+
+    # 图片资源直接映射：效率更高，解决详情页照片不显示
     location /uploads/ {
-        proxy_pass http://localhost:8080;
+        alias /root/personal-blog/uploads/;
     }
 }
 ```
