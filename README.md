@@ -81,6 +81,10 @@ spring.datasource.username=${DB_USERNAME:root}
 spring.datasource.password=${DB_PASSWORD:}
 spring.servlet.multipart.max-file-size=15MB
 spring.servlet.multipart.max-request-size=15MB
+
+# 核心路径与跨域配置 (保持默认或根据下方环境变量修改)
+upload.path=${user.dir}/uploads/
+app.cors.allowed-origin=${CORS_ORIGIN:http://localhost:5173}
 ```
 
 ### 环境变量设置
@@ -90,6 +94,7 @@ set DB_USERNAME=root
 set DB_PASSWORD=你的数据库密码
 set ADMIN_USERNAME=admin
 set ADMIN_PASSWORD=你的后台登录密码
+set CORS_ORIGIN=http://localhost:5173
 ```
 
 #### Windows（永久）
@@ -99,6 +104,7 @@ set ADMIN_PASSWORD=你的后台登录密码
     - 变量名：`DB_PASSWORD`，变量值：`123456`
     - 变量名：`ADMIN_USERNAME`，变量值：`admin`
     - 变量名：`ADMIN_PASSWORD`，变量值：`123456`
+    - 变量名：`CORS_ORIGIN`,变量值：`http://localhost:5173`
 
 #### Mac/Linux
 ```bash
@@ -106,34 +112,27 @@ export DB_USERNAME=root
 export DB_PASSWORD=你的数据库密码
 export ADMIN_USERNAME=admin
 export ADMIN_PASSWORD=你的后台登录密码
+export CORS_ORIGIN=http://localhost:5173
 ```
 
 ### 运行项目
 ```bash
 # 使用 Maven
 mvn spring-boot:run
-````
-### 测试接口
-打开浏览器访问：
 ```
-http://localhost:8080/api/blogs
-```
-若返回带有 code: 200 的 JSON 数据且数据库中自动出现了 flyway_schema_history 表，说明项目已启动
 
 ### 打包部署
 ```bash
 # 打包（跳过测试）
 mvn clean package -Dmaven.test.skip=true
 
-# 运行 jar 包
-java -jar target/personal-blog-0.0.1-SNAPSHOT.jar
-
-# 指定环境变量运行
+# 运行 jar 包（指定所有核心参数）
 java -jar target/personal-blog-0.0.1-SNAPSHOT.jar \
   --DB_USERNAME=root \
-  --DB_PASSWORD=123456 \
+  --DB_PASSWORD=你的数据库密码 \
   --ADMIN_USERNAME=admin \
-  --ADMIN_PASSWORD=123456
+  --ADMIN_PASSWORD=你的安全密码 \
+  --CORS_ORIGIN=http://你的域名或IP
 ````
 
 ## 部署到服务器
@@ -145,42 +144,29 @@ java -jar target/personal-blog-0.0.1-SNAPSHOT.jar \
 # 更新系统
 apt update && apt upgrade -y
 
-# 安装 JDK 17
-apt install openjdk-17-jdk -y
-
-# 安装 MySQL
-apt install mysql-server -y
-
-# 安装 Nginx（用于前端）
-apt install nginx -y
-
-# 安装 Git
-apt install git -y
+# 安装必要组件
+apt install openjdk-17-jdk mysql-server nginx git unzip -y
 ```
 
 ### 部署后端
 ```bash
-# 克隆代码
-git clone https://github.com/C3-Sharon/personal-blog.git
-cd personal-blog
+# 准备目录
+mkdir -p /var/www/blog
+cd /root/personal-blog
 
-# 设置生产环境必要的环境变量（根据实际情况修改）
-export DB_USERNAME=root
-export DB_PASSWORD=你的服务器数据库密码
-export ADMIN_USERNAME=admin
-export ADMIN_PASSWORD=你的后台登录密码
-
-# 打包并运行
-mvn clean package -Dmaven.test.skip=true
-nohup java -jar target/personal-blog-0.0.1-SNAPSHOT.jar > blog.log 2>&1 &
+# 启动后端 (注意设置文件上传大小限制)
+nohup java -jar personal-blog-0.0.1-SNAPSHOT.jar \
+  --DB_PASSWORD=你的数据库密码 \
+  --CORS_ORIGIN=http://你的服务器IP \
+  --ADMIN_USERNAME=你的后台用户名 \
+  --ADMIN_PASSWORD=你的后台登录密码 \
+  --spring.servlet.multipart.max-file-size=50MB \
+  --spring.servlet.multipart.max-request-size=50MB \
+  > blog.log 2>&1 &
 ```
 
 ### 部署前端
-```bashon
-# 克隆代码
-git clone https://github.com/C3-Sharon/blog-frontend.git
-cd blog-frontend
-
+```bash
 # 修改 API 地址（写入你的服务器公网 IP 或域名）
 echo "VITE_API_BASE_URL=http://你的服务器IP/api" > .env.production
 
@@ -197,25 +183,31 @@ vim /etc/nginx/sites-available/default
 
 写入：
 ```nginx
+# 为了让 Nginx 有权限读取 /root 下的图片，建议将第一行修改为：
+# user root; 
+
 server {
     listen 80;
-    server_name 你的域名或IP;
+    server_name 你的服务器IP;
     
-    root /var/www/html;
-    index index.html;
-    
+    # 允许上传大图
+    client_max_body_size 50M;
+
     location / {
+        root /var/www/html;
+        index index.html;
         try_files $uri $uri/ /index.html;
     }
-    
+
+    # 接口转发：注意末尾的斜杠
     location /api/ {
-        proxy_pass http://localhost:8080;
+        proxy_pass http://127.0.0.1:8080/api/;
         proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
     }
-    
+
+    # 图片资源直接映射：效率更高，解决详情页照片不显示
     location /uploads/ {
-        proxy_pass http://localhost:8080;
+        alias /root/personal-blog/uploads/;
     }
 }
 ```
@@ -410,8 +402,14 @@ src/main/resources/
 ```
 #### 2.25(深入学习项目，完善后端优化)
 ```text
-完善后端逻辑的横向抽取（ApiGalleryController之前忘记处理了）
+完善后端逻辑的横向抽取（ApiGalleryController之前忘记处理了）;
 ```
+#### 2.26（深入学习项目，抽离前端 Origin）
+```text
+代码中的CORS_ORIGIN彻底抽离至配置文件;
+更新README使用教程；
+```
+
 ## 作者
 三碳化合物 (C3-Sharon)
 
