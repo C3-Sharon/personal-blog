@@ -407,6 +407,7 @@ src/main/resources/
 #### 2.26（深入学习项目，抽离前端 Origin）
 ```text
 代码中的CORS_ORIGIN彻底抽离至配置文件;
+扩展 artwork 字段长度以支持 docx 等文档上传；
 更新README使用教程；
 ```
 
