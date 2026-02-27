@@ -70,9 +70,6 @@ public class ApiBlogController {
 @PostMapping("/admin/blogs")
     public Result<Blog> createBlog(@RequestBody Blog blog,HttpSession session) {
 
-    if (session.getAttribute("adminUser") == null) {
-        return Result.error("请先登录");
-    }
         blog.setCreatedAt(LocalDateTime.now());
         Blog savedBlog = blogService.saveBlog(blog);
         return Result.ok("成功发布",savedBlog);
@@ -81,9 +78,7 @@ public class ApiBlogController {
 
 @PostMapping ("/admin/blogs/{id}")
   public Result<Blog> updateBlog(@PathVariable Long id, @RequestBody Blog blog, HttpSession session) {
-          if (session.getAttribute("adminUser") == null) {
-              return Result.error("未登录");
-          }
+
               blog.setId(id);
               Blog updateBlog =blogService.saveBlog(blog);
               return Result.ok("成功更新",updateBlog);
@@ -97,9 +92,6 @@ public class ApiBlogController {
 
     @PostMapping("/admin/delete/{id}")
     public Result<Void> deleteBlog(@PathVariable Long id, HttpSession session){
-        if (session.getAttribute("adminUser") == null) {
-            return Result.error("请先登录");
-        }
             blogService.deleteBlog(id);
             return Result.ok();
     }
@@ -132,9 +124,6 @@ public class ApiBlogController {
     @DeleteMapping("/admin/comments/{id}")
     public Result<Comment> deleteComment(@PathVariable Long id,HttpSession session){
 
-        if(session.getAttribute("adminUser") == null){
-            return Result.error("未登录");
-        }
             System.out.println("开始调用 service.deleteComment，ID: " + id);
             commentService.deleteComment(id);
             System.out.println("service 调用完成");

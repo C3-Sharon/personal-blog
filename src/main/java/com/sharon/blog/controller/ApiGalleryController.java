@@ -42,11 +42,8 @@ public class ApiGalleryController {
             @RequestParam String category,
             @RequestParam String description,
             @RequestParam("file") MultipartFile file,
-            HttpSession session) throws IOException {
+            HttpSession session)  {
 
-        if (session.getAttribute("adminUser") == null) {
-            return Result.error("请先登录");
-        }
             String originalFilename = file.getOriginalFilename();
             String extension = "";
             if (originalFilename != null && originalFilename.contains(".")) {
@@ -62,20 +59,29 @@ public class ApiGalleryController {
             }
 
             File dest = new File(uploadPath + File.separator + filename);
-            file.transferTo(dest);
+            try {
+                file.transferTo(dest);
 
-            ArtWork artwork = new ArtWork();
-            artwork.setTitle(title);
-            artwork.setCategory(category);
-            artwork.setDescription(description);
-            artwork.setFilePath("/uploads/gallery/" + filename);
-            artwork.setFileType(file.getContentType());
-            artwork.setCreatedAt(LocalDateTime.now());
-            artwork.setUpdatedAt(artwork.getCreatedAt());
+                ArtWork artwork = new ArtWork();
+                artwork.setTitle(title);
+                artwork.setCategory(category);
+                artwork.setDescription(description);
+                artwork.setFilePath("/uploads/gallery/" + filename);
+                artwork.setFileType(file.getContentType());
+                artwork.setCreatedAt(LocalDateTime.now());
+                artwork.setUpdatedAt(artwork.getCreatedAt());
 
-            artWorkService.saveArtwork(artwork);
+                artWorkService.saveArtwork(artwork);
 
-            return Result.ok(artwork);
+                return Result.ok(artwork);
+
+            }catch (Exception e){
+                if(dest.exists()){
+                    boolean deleted=dest.delete();
+                    e.printStackTrace();
+                }
+                return Result.error("服务器异常：数据保存失败，文件已清理");
+            }
 
         }
 
@@ -83,9 +89,7 @@ public class ApiGalleryController {
     public Result<ArtWork> updateArtwork(@PathVariable Long id,
                                 @RequestBody ArtWork artwork,
                                 HttpSession session){
-        if (session.getAttribute("adminUser") == null) {
-            return Result.error("请先登录");
-        }
+
             artwork.setId(id);
             artwork.setUpdatedAt(LocalDateTime.now());
             artWorkService.saveArtwork(artwork);
@@ -93,9 +97,7 @@ public class ApiGalleryController {
     }
     @DeleteMapping("/{id}")
     public Result<Void> deleteArtwork(@PathVariable Long id,HttpSession session){
-        if (session.getAttribute("adminUser") == null) {
-            return Result.error("请先登录");
-        }
+
             artWorkService.deleteArtwork(id);
             return Result.ok();
     }
