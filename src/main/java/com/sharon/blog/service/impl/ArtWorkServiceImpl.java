@@ -13,10 +13,6 @@ public class ArtWorkServiceImpl implements ArtWorkService{
     @Autowired
     private ArtWorkMapper artWorkMapper;
 
-    @Override
-    public List<ArtWork> getByCategory(String category) {
-        return artWorkMapper.findByCategory(category);
-    }
 
     @Override
     public PageResult<ArtWork> getPageByCategory(String category, int page, int size) {

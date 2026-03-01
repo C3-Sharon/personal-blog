@@ -7,7 +7,6 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface ArtWorkService {
-    List<ArtWork> getByCategory(String category);
 
     PageResult<ArtWork> getPageByCategory(String category, int page, int size);
 
