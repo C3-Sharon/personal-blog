@@ -1,6 +1,7 @@
 package com.sharon.blog.controller;
 
 import com.sharon.blog.util.Result;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,10 +14,11 @@ import java.util.UUID;
 
 @Controller
 public class ImageUploadController {
-
+    @Value("${upload.path}")
+    private String uploadPath;
     @PostMapping("/api/admin/upload/image")
     @ResponseBody
-    public Result<String> uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
+    public Result<String> uploadImage(@RequestParam("file") MultipartFile file)  {
 
             if (file.isEmpty()) {
                 return Result.error("文件不能为空");
@@ -34,30 +36,38 @@ public class ImageUploadController {
             }
             String filename = UUID.randomUUID().toString() + extension;
 
-            String projectPath = System.getProperty("user.dir");
-            String uploadPath = projectPath + File.separator + "uploads";
+        String cleanPath = uploadPath.startsWith("file:") ? uploadPath.substring(5) : uploadPath;
 
             System.out.println("========== 图片上传调试信息 ==========");
-            System.out.println("项目路径: " + projectPath);
+            System.out.println("项目路径: " + cleanPath);
             System.out.println("上传目录: " + uploadPath);
 
-            File uploadFolder = new File(uploadPath);
+            File uploadFolder = new File(cleanPath);
             if (!uploadFolder.exists()) {
                 boolean created = uploadFolder.mkdirs();
                 System.out.println("创建上传目录: " + (created ? "成功" : "失败"));
             }
 
             File dest = new File(uploadPath + File.separator + filename);
-            file.transferTo(dest);
+            try {
+                file.transferTo(dest);
 
-            System.out.println("文件保存路径: " + dest.getAbsolutePath());
-            System.out.println("文件是否存在: " + dest.exists());
+                System.out.println("文件保存路径: " + dest.getAbsolutePath());
+                System.out.println("文件是否存在: " + dest.exists());
 
-            String fileUrl = "/uploads/" + filename;
-            System.out.println("图片访问URL: " + fileUrl);
-            System.out.println("=====================================");
+                String fileUrl = "/uploads/" + filename;
+                System.out.println("图片访问URL: " + fileUrl);
+                System.out.println("=====================================");
 
-            return Result.ok("图片上传成功",fileUrl);
+                return Result.ok("图片上传成功",fileUrl);
+            }catch (Exception e) {
+                if(dest.exists()){
+                    dest.delete();
+                }
+                e.printStackTrace();
+                return Result.error("文件保存失败"+e.getMessage());
+            }
+
 
     }
 }

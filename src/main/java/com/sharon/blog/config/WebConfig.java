@@ -2,6 +2,7 @@ package com.sharon.blog.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -9,9 +10,23 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
     @Value("${upload.path}")
     private String uploadPath;
+    @Value("${app.cors.allowed-origin:http://localhost:5137}")
+    private String corsAllowedOrigin;
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins(corsAllowedOrigin)
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true)
+                .maxAge(3600);
+    }
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/admin/**").excludePathPatterns("/admin/login");
+        registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/admin/**")
+                .addPathPatterns("/api/admin/**")
+                .addPathPatterns("/api/gallery/**")
+                .excludePathPatterns("/admin/login", "/api/admin/login", "/api/admin/check");
     }
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -30,3 +45,5 @@ public class WebConfig implements WebMvcConfigurer {
         System.out.println("=====================================");
     }
 }
+
+
