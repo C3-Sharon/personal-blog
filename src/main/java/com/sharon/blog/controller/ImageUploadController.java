@@ -48,7 +48,7 @@ public class ImageUploadController {
                 System.out.println("创建上传目录: " + (created ? "成功" : "失败"));
             }
 
-            File dest = new File(uploadPath + File.separator + filename);
+            File dest = new File(cleanPath + File.separator + filename);
             try {
                 file.transferTo(dest);
 
@@ -67,7 +67,5 @@ public class ImageUploadController {
                 e.printStackTrace();
                 return Result.error("文件保存失败"+e.getMessage());
             }
-
-
     }
 }

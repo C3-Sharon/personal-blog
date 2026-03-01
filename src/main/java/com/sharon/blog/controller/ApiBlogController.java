@@ -24,7 +24,6 @@ class LoginStatus {
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class ApiBlogController {
 
     @Autowired
@@ -68,7 +67,7 @@ public class ApiBlogController {
     }
 
 @PostMapping("/admin/blogs")
-    public Result<Blog> createBlog(@RequestBody Blog blog,HttpSession session) {
+    public Result<Blog> createBlog(@RequestBody Blog blog) {
 
         blog.setCreatedAt(LocalDateTime.now());
         Blog savedBlog = blogService.saveBlog(blog);
@@ -77,7 +76,7 @@ public class ApiBlogController {
 }
 
 @PostMapping ("/admin/blogs/{id}")
-  public Result<Blog> updateBlog(@PathVariable Long id, @RequestBody Blog blog, HttpSession session) {
+  public Result<Blog> updateBlog(@PathVariable Long id, @RequestBody Blog blog) {
 
               blog.setId(id);
               Blog updateBlog =blogService.saveBlog(blog);
@@ -122,7 +121,7 @@ public class ApiBlogController {
     }
 
     @DeleteMapping("/admin/comments/{id}")
-    public Result<Comment> deleteComment(@PathVariable Long id,HttpSession session){
+    public Result<Comment> deleteComment(@PathVariable Long id){
 
             System.out.println("开始调用 service.deleteComment，ID: " + id);
             commentService.deleteComment(id);

@@ -6,6 +6,7 @@ import com.sharon.blog.service.impl.ArtWorkService;
 import com.sharon.blog.util.Result;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +21,8 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/gallery")
 public class ApiGalleryController {
+    @Value("${upload.path}")
+    private String uploadPath;
     @Autowired
     private ArtWorkService artWorkService;
     @GetMapping
@@ -36,13 +39,12 @@ public class ApiGalleryController {
         return Result.ok(artWorkService.getById(id));
     }
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping( consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Result<ArtWork> uploadArtwork(
             @RequestParam String title,
             @RequestParam String category,
             @RequestParam String description,
-            @RequestParam("file") MultipartFile file,
-            HttpSession session)  {
+            @RequestParam("file") MultipartFile file)  {
 
             String originalFilename = file.getOriginalFilename();
             String extension = "";
@@ -51,14 +53,13 @@ public class ApiGalleryController {
             }
             String filename = UUID.randomUUID().toString() + extension;
 
-            String projectPath = System.getProperty("user.dir");
-            String uploadPath = projectPath + File.separator + "uploads" + File.separator + "gallery";
-            File uploadFolder = new File(uploadPath);
+        String cleanPath = uploadPath.startsWith("file:") ? uploadPath.substring(5) : uploadPath;
+            File uploadFolder = new File(cleanPath+File.separator+"gallery");
             if (!uploadFolder.exists()) {
                 uploadFolder.mkdirs();
             }
 
-            File dest = new File(uploadPath + File.separator + filename);
+            File dest = new File(uploadFolder.getAbsolutePath() + File.separator + filename);
             try {
                 file.transferTo(dest);
 
@@ -77,13 +78,13 @@ public class ApiGalleryController {
 
             }catch (Exception e){
                 if(dest.exists()){
-                    boolean deleted=dest.delete();
-                    e.printStackTrace();
+                   dest.delete();
                 }
-                return Result.error("服务器异常：数据保存失败，文件已清理");
+                e.printStackTrace();
+                return Result.error("服务器异常：数据保存失败，文件已清理"+e.getMessage());
             }
 
-        }
+    }
 
     @PutMapping("/{id}")
     public Result<ArtWork> updateArtwork(@PathVariable Long id,
@@ -97,7 +98,6 @@ public class ApiGalleryController {
     }
     @DeleteMapping("/{id}")
     public Result<Void> deleteArtwork(@PathVariable Long id,HttpSession session){
-
             artWorkService.deleteArtwork(id);
             return Result.ok();
     }
